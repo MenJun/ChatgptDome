@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChatGPT Web Chat</title>
+    <meta charset="utf-8" />
+    <!-- 加载jQuery CDN -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- 加载Bootstrap CDN -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .chat-box {
+            margin-top: 30px;
+        }
+        .chat-header {
+            background-color: #f2f2f2;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            padding: 10px;
+        }
+        .chat-body {
+            background-color: #ffffff;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        .chat-input {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3 chat-box">
+                <div class="chat-header">
+                    <h3>ChatGPT Web Chat</h3>
+                </div>
+                <div class="chat-body" id="chat-body">
+                    <!-- 聊天记录将显示在此处 -->
+                </div>
+                <div class="chat-input input-group">
+                    <input type="text" class="form-control" placeholder="请输入您的问题" id="txtPrompt" />
+                    <button class="btn btn-primary" id="btnSend">发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            // 点击发送按钮
+            $('#btnSend').click(function () {
+                var prompt = $('#txtPrompt').val().trim();
+                if (prompt) {
+                    // 发送POST请求
+                    $.post({
+                        url: 'https://api.openai.com/v1/engines/davinci/completions',
+                        headers: {
+                            'Authorization': 'Bearer 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'
+                        },
+                        data: JSON.stringify({ prompt: prompt, max_tokens: 150 }),
+                        contentType: 'application/json',
+                        success: function (data) {
+                            // 处理响应
+                            var output = data.choices[0].text;
+                            $('#chat-body').append('<p><strong>你:</strong> ' + prompt + '</p>');
+                            $('#chat-body').append('<p><strong>Chatbot:</strong> ' + output + '</p>');
+                            $('#txtPrompt').val('');
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.error(jqXHR.responseText);
+                            alert('发送失败');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
